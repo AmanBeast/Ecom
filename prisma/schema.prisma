@@ -1,0 +1,226 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  WORKSPACE_OWNER
+  SELLER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum ProductCondition {
+  NEW
+  LIKE_NEW
+  GOOD
+  FAIR
+}
+
+enum ProductStatus {
+  ACTIVE
+  SOLD
+  RESERVED
+  REMOVED
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  avatar       String?
+  role         Role      @default(USER)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  workspaces   Workspace[]
+  bookings     Booking[]
+  products     Product[]
+  orders       Order[]   @relation("BuyerOrders")
+  sales        Order[]   @relation("SellerOrders")
+  sentMessages Message[] @relation("SentMessages")
+  conversations ConversationParticipant[]
+}
+
+model Workspace {
+  id          String   @id @default(uuid())
+  ownerId     String
+  title       String
+  description String
+  location    String
+  latitude    Float?
+  longitude   Float?
+  dailyPrice  Int
+  rating      Float    @default(5.0)
+  reviewCount Int      @default(0)
+  status      String   @default("ACTIVE")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner       User     @relation(fields: [ownerId], references: [id])
+  images      WorkspaceImage[]
+  amenities   WorkspaceAmenity[]
+  availabilities WorkspaceAvailability[]
+  bookings    Booking[]
+
+  @@index([location])
+  @@index([dailyPrice])
+  @@index([status])
+}
+
+model WorkspaceImage {
+  id          String    @id @default(uuid())
+  workspaceId String
+  url         String
+  position    Int       @default(0)
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model WorkspaceAmenity {
+  id          String    @id @default(uuid())
+  workspaceId String
+  name        String
+  icon        String
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model WorkspaceAvailability {
+  id          String    @id @default(uuid())
+  workspaceId String
+  date        DateTime
+  available   Boolean   @default(true)
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, date])
+}
+
+model Booking {
+  id          String        @id @default(uuid())
+  userId      String
+  workspaceId String
+  bookingDate DateTime
+  duration    Int           @default(1)
+  totalPrice  Int
+  status      BookingStatus @default(CONFIRMED)
+  createdAt   DateTime      @default(now())
+
+  user        User          @relation(fields: [userId], references: [id])
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id])
+
+  @@index([workspaceId, bookingDate])
+  @@index([userId])
+}
+
+model Product {
+  id            String           @id @default(uuid())
+  sellerId      String
+  title         String
+  description   String
+  price         Int
+  originalPrice Int?
+  condition     ProductCondition @default(LIKE_NEW)
+  category      String
+  status        ProductStatus    @default(ACTIVE)
+  location      String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  seller        User             @relation(fields: [sellerId], references: [id])
+  images        ProductImage[]
+  specifications ProductSpecification[]
+  orders        Order[]
+
+  @@index([category])
+  @@index([price])
+  @@index([condition])
+  @@index([status])
+}
+
+model ProductImage {
+  id        String   @id @default(uuid())
+  productId String
+  url       String
+  position  Int      @default(0)
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductSpecification {
+  id        String   @id @default(uuid())
+  productId String
+  key       String
+  value     String
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  buyerId     String
+  productId   String
+  sellerId    String
+  amount      Int
+  status      OrderStatus @default(PAID)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  buyer       User        @relation("BuyerOrders", fields: [buyerId], references: [id])
+  seller      User        @relation("SellerOrders", fields: [sellerId], references: [id])
+  product     Product     @relation(fields: [productId], references: [id])
+
+  @@index([buyerId])
+  @@index([sellerId])
+}
+
+model Conversation {
+  id           String                    @id @default(uuid())
+  createdAt    DateTime                  @default(now())
+
+  participants ConversationParticipant[]
+  messages     Message[]
+}
+
+model ConversationParticipant {
+  conversationId String
+  userId         String
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([conversationId, userId])
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  senderId       String
+  content        String
+  createdAt      DateTime     @default(now())
+  readAt         DateTime?
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id])
+}
