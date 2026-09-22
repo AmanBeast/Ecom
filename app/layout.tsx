@@ -8,6 +8,10 @@ import { MakeOfferModal } from "@/components/modals/MakeOfferModal";
 import { EscrowCheckoutModal } from "@/components/modals/EscrowCheckoutModal";
 import { BookingSheetModal } from "@/components/modals/BookingSheetModal";
 import { BookingConfirmedModal } from "@/components/modals/BookingConfirmedModal";
+import { LocationModal } from "@/components/modals/LocationModal";
+import { BecomeSellerModal } from "@/components/modals/BecomeSellerModal";
+import { AddProductModal } from "@/components/modals/AddProductModal";
+import { AddWorkspaceModal } from "@/components/modals/AddWorkspaceModal";
 import { ToastContainer } from "@/components/shared/ToastContainer";
 
 export const metadata: Metadata = {
@@ -31,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -44,7 +48,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="bg-surface text-on-surface flex flex-col min-h-screen">
+      <body className="bg-surface dark:bg-[#0f0e14] text-on-surface dark:text-[#f3f0f4] flex flex-col min-h-screen transition-colors duration-200">
         <AppProvider>
           <TopHeader />
           <main className="flex-1 w-full pt-16 pb-20 md:pb-12">
@@ -53,6 +57,10 @@ export default function RootLayout({
           <BottomNav />
 
           {/* Global Modals & Notifications */}
+          <LocationModal />
+          <BecomeSellerModal />
+          <AddProductModal />
+          <AddWorkspaceModal />
           <ChatSellerDrawer />
           <MakeOfferModal />
           <EscrowCheckoutModal />

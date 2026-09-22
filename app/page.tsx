@@ -6,7 +6,18 @@ import { useApp } from "@/lib/context/AppContext";
 import { formatINR } from "@/lib/utils";
 
 export default function HomePage() {
-  const { toggleFavorite, isFavorite, openCheckoutModal, openBookingModal } = useApp();
+  const {
+    toggleFavorite,
+    isFavorite,
+    openCheckoutModal,
+    openBookingModal,
+    currentLocation,
+    openLocationModal,
+    openAddProductModal,
+    openAddWorkspaceModal,
+    isSeller,
+    openBecomeSellerModal,
+  } = useApp();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
@@ -63,25 +74,59 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Location chip */}
-        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant/40 text-xs shadow-xs">
+        {/* Location chip (Interactive) */}
+        <button
+          type="button"
+          onClick={openLocationModal}
+          className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant/40 text-xs shadow-xs hover:border-primary transition-all active:scale-95"
+          title="Click to change your delivery location"
+        >
           <span className="material-symbols-outlined text-[16px] text-primary">location_on</span>
-          <span className="text-on-surface font-semibold">Chandigarh 160017</span>
+          <span className="text-on-surface font-semibold max-w-[140px] truncate">{currentLocation}</span>
           <span className="text-secondary font-medium text-[11px] ml-1">● Express Area</span>
-        </div>
+          <span className="material-symbols-outlined text-[14px] text-on-surface-variant">arrow_drop_down</span>
+        </button>
       </div>
 
-      {/* Hero Headline */}
-      <div className="pt-1">
-        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-on-surface tracking-tight leading-tight mb-1.5">
-          Work better. <br className="sm:hidden" />
-          <span className="text-primary-container bg-gradient-to-r from-primary via-primary-container to-tertiary bg-clip-text text-transparent">
-            Shop smarter.
-          </span>
-        </h1>
-        <p className="text-sm sm:text-base text-on-surface-variant max-w-2xl leading-relaxed">
-          Find your next high-focus workspace desk or discover certified pre-owned tech backed by escrow protection.
-        </p>
+      {/* Hero Headline & Quick Seller / Host CTA */}
+      <div className="pt-1 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-on-surface tracking-tight leading-tight mb-1.5">
+            Work better. <br className="sm:hidden" />
+            <span className="text-primary-container bg-gradient-to-r from-primary via-primary-container to-tertiary bg-clip-text text-transparent">
+              Shop smarter.
+            </span>
+          </h1>
+          <p className="text-sm sm:text-base text-on-surface-variant max-w-2xl leading-relaxed">
+            Find your next high-focus workspace desk or discover certified pre-owned tech backed by escrow protection.
+          </p>
+        </div>
+
+        {/* Seller & Host Direct Action Buttons */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              if (isSeller) {
+                openAddProductModal();
+              } else {
+                openBecomeSellerModal();
+              }
+            }}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-xs active:scale-95 transition-all"
+          >
+            <span className="material-symbols-outlined text-[16px]">sell</span>
+            <span>Sell Tech</span>
+          </button>
+          <button
+            type="button"
+            onClick={openAddWorkspaceModal}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-surface-container-high text-on-surface text-xs font-bold hover:bg-surface-container-highest border border-outline-variant/30 shadow-xs active:scale-95 transition-all"
+          >
+            <span className="material-symbols-outlined text-[16px]">chair</span>
+            <span>+ Host Desk</span>
+          </button>
+        </div>
       </div>
 
       {/* Quick Search / Discover Bar */}
@@ -112,13 +157,17 @@ export default function HomePage() {
         </form>
 
         {/* Location bar on mobile */}
-        <div className="sm:hidden mt-2 flex items-center justify-between text-on-surface-variant text-xs px-1">
+        <button
+          type="button"
+          onClick={openLocationModal}
+          className="sm:hidden mt-2 w-full flex items-center justify-between text-on-surface-variant text-xs px-1 text-left"
+        >
           <div className="flex items-center gap-1 truncate">
             <span className="material-symbols-outlined text-[16px] text-primary">location_on</span>
-            <span className="text-on-surface font-medium truncate">Deliver to Alex - Chandigarh 160017</span>
+            <span className="text-on-surface font-medium truncate">Deliver to Alex - {currentLocation}</span>
           </div>
-          <span className="text-primary font-medium shrink-0 ml-2">Change</span>
-        </div>
+          <span className="text-primary font-semibold shrink-0 ml-2">Change</span>
+        </button>
       </div>
 
       {/* Super Saver Deals Banner */}

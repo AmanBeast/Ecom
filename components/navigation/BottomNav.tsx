@@ -16,7 +16,7 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 pb-safe bg-surface/90 backdrop-blur-xl border-t border-outline-variant/40 shadow-[0_-1px_12px_rgba(0,0,0,0.04)]">
+    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 pb-safe bg-surface/90 dark:bg-[#121118]/95 backdrop-blur-xl border-t border-outline-variant/40 dark:border-[#2e2b3d] shadow-[0_-1px_12px_rgba(0,0,0,0.04)]">
       <div className="h-16 px-3 flex items-center justify-around">
         {navItems.map((item) => {
           const isActive =
@@ -30,8 +30,8 @@ export function BottomNav() {
               href={item.href}
               className={`min-h-[44px] min-w-[44px] flex flex-col items-center justify-center gap-1 transition-colors ${
                 isActive
-                  ? "text-primary-container font-semibold"
-                  : "text-on-surface-variant hover:text-on-surface"
+                  ? "text-primary dark:text-[#818cf8] font-bold"
+                  : "text-on-surface-variant dark:text-[#9e9aa8] hover:text-on-surface dark:hover:text-white"
               }`}
             >
               <span

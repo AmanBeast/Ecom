@@ -19,15 +19,15 @@ export async function POST(request: Request) {
     // Validate required fields
     if (!body.title || !body.dailyPrice || !body.location) {
       return NextResponse.json(
-        { success: false, error: "Missing required fields" },
+        { success: false, error: "Missing required fields (title, dailyPrice, location)" },
         { status: 400 }
       );
     }
-    // Return mock success
-    return NextResponse.json({ success: true, message: "Workspace created" }, { status: 201 });
-  } catch {
+    const newWs = dataService.createWorkspace(body);
+    return NextResponse.json({ success: true, data: newWs }, { status: 201 });
+  } catch (err: any) {
     return NextResponse.json(
-      { success: false, error: "Invalid payload" },
+      { success: false, error: err.message || "Invalid payload" },
       { status: 400 }
     );
   }

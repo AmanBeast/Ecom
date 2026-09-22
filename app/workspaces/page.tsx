@@ -7,7 +7,7 @@ import { WorkspaceItem } from "@/lib/data/mockData";
 import { formatINR } from "@/lib/utils";
 
 export default function WorkspacesPage() {
-  const { toggleFavorite, isFavorite, openBookingModal } = useApp();
+  const { toggleFavorite, isFavorite, openBookingModal, openAddWorkspaceModal, currentLocation, openLocationModal } = useApp();
   const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -52,18 +52,40 @@ export default function WorkspacesPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex flex-col gap-6">
       {/* Header */}
-      <div>
-        <div className="flex items-center gap-1.5 text-xs text-on-surface-variant mb-1">
-          <Link href="/" className="hover:text-primary">Home</Link>
-          <span>/</span>
-          <span className="text-on-surface font-semibold">Workspaces</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-1.5 text-xs text-on-surface-variant mb-1">
+            <Link href="/" className="hover:text-primary">Home</Link>
+            <span>/</span>
+            <span className="text-on-surface font-semibold">Workspaces</span>
+          </div>
+          <h1 className="text-2xl sm:text-4xl font-extrabold text-on-surface tracking-tight">
+            Find Workspaces &amp; Desks
+          </h1>
+          <p className="text-xs sm:text-sm text-on-surface-variant mt-1">
+            Instant booking, verified fiber Wi-Fi, ergonomic chairs, and transparent daily pricing.
+          </p>
         </div>
-        <h1 className="text-2xl sm:text-4xl font-extrabold text-on-surface tracking-tight">
-          Find Workspaces &amp; Desks
-        </h1>
-        <p className="text-xs sm:text-sm text-on-surface-variant mt-1">
-          Instant booking, verified fiber Wi-Fi, ergonomic chairs, and transparent daily pricing.
-        </p>
+
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={openLocationModal}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-container-lowest border border-outline-variant/30 text-xs font-semibold text-on-surface shadow-xs hover:border-primary transition-all"
+            title="Change Location"
+          >
+            <span className="material-symbols-outlined text-[16px] text-primary">location_on</span>
+            <span className="max-w-[120px] truncate">{currentLocation}</span>
+          </button>
+          <button
+            type="button"
+            onClick={openAddWorkspaceModal}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-xs active:scale-95 transition-all"
+          >
+            <span className="material-symbols-outlined text-[18px]">add</span>
+            <span>+ Host a Workspace</span>
+          </button>
+        </div>
       </div>
 
       {/* Search and Filters Bar */}

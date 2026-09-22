@@ -6,7 +6,14 @@ import { useApp } from "@/lib/context/AppContext";
 import { formatINR } from "@/lib/utils";
 
 export default function DashboardPage() {
-  const { showToast } = useApp();
+  const {
+    showToast,
+    openAddWorkspaceModal,
+    openAddProductModal,
+    isSeller,
+    openBecomeSellerModal,
+    storeInfo,
+  } = useApp();
   const [roleMode, setRoleMode] = useState<"host" | "seller">("host");
 
   return (
@@ -23,11 +30,11 @@ export default function DashboardPage() {
             <div className="flex items-center gap-2">
               <h1 className="text-xl sm:text-2xl font-extrabold text-on-surface">Alex Rivera</h1>
               <span className="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-[11px] font-bold">
-                Verified Host &amp; Seller
+                {isSeller ? "Certified Pro Seller & Host" : "Verified Member & Host"}
               </span>
             </div>
             <p className="text-xs text-on-surface-variant">
-              Sector 17, Chandigarh • Member since 2024
+              Sector 17, Chandigarh • Member since 2024 {storeInfo && `• ${storeInfo.storeName}`}
             </p>
           </div>
         </div>
@@ -105,8 +112,8 @@ export default function DashboardPage() {
               </div>
               <button
                 type="button"
-                onClick={() => showToast("New workspace listing modal opened", "info")}
-                className="px-4 py-2 rounded-xl bg-primary text-on-primary text-xs font-bold hover:bg-primary-container transition-colors flex items-center gap-1.5"
+                onClick={openAddWorkspaceModal}
+                className="px-4 py-2 rounded-xl bg-primary text-on-primary text-xs font-bold hover:bg-primary-container transition-colors flex items-center gap-1.5 shadow-xs active:scale-95"
               >
                 <span className="material-symbols-outlined text-[18px]">add</span>
                 <span>Add Workspace</span>
@@ -151,6 +158,27 @@ export default function DashboardPage() {
       {/* Seller Perspective */}
       {roleMode === "seller" && (
         <div className="space-y-6">
+          {!isSeller && (
+            <div className="p-4 sm:p-5 rounded-3xl bg-primary/10 border border-primary/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-primary text-on-primary flex items-center justify-center">
+                  <span className="material-symbols-outlined text-[20px]">storefront</span>
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-on-surface">Become a Certified Tech Seller</h4>
+                  <p className="text-xs text-on-surface-variant">Register your seller storefront to list used gear, macbooks, and accessories with escrow guarantee.</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={openBecomeSellerModal}
+                className="px-4 py-2 bg-primary text-on-primary rounded-xl text-xs font-bold hover:bg-primary-container shrink-0 shadow-xs"
+              >
+                Register Storefront
+              </button>
+            </div>
+          )}
+
           {/* Key Metrics */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-surface-container-lowest p-5 rounded-3xl border border-outline-variant/30 shadow-xs flex flex-col gap-1">
@@ -194,8 +222,14 @@ export default function DashboardPage() {
               </div>
               <button
                 type="button"
-                onClick={() => showToast("New hardware listing creator opened", "info")}
-                className="px-4 py-2 rounded-xl bg-primary text-on-primary text-xs font-bold hover:bg-primary-container transition-colors flex items-center gap-1.5"
+                onClick={() => {
+                  if (isSeller) {
+                    openAddProductModal();
+                  } else {
+                    openBecomeSellerModal();
+                  }
+                }}
+                className="px-4 py-2 rounded-xl bg-primary text-on-primary text-xs font-bold hover:bg-primary-container transition-colors flex items-center gap-1.5 shadow-xs active:scale-95"
               >
                 <span className="material-symbols-outlined text-[18px]">add</span>
                 <span>List Hardware</span>

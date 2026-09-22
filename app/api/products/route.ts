@@ -17,17 +17,18 @@ export async function POST(request: Request) {
     const body = await request.json();
     if (!body.title || !body.price || !body.category) {
       return NextResponse.json(
-        { success: false, error: "Missing required fields" },
+        { success: false, error: "Missing required fields (title, price, category)" },
         { status: 400 }
       );
     }
+    const newProd = dataService.createProduct(body);
     return NextResponse.json(
-      { success: true, message: "Product listed successfully" },
+      { success: true, data: newProd, message: "Product listed successfully" },
       { status: 201 }
     );
-  } catch {
+  } catch (err: any) {
     return NextResponse.json(
-      { success: false, error: "Invalid payload" },
+      { success: false, error: err.message || "Invalid payload" },
       { status: 400 }
     );
   }

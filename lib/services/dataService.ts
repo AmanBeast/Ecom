@@ -52,6 +52,53 @@ export const dataService = {
     return workspacesStore.find((w) => w.id === id) || null;
   },
 
+  createWorkspace: (data: {
+    title: string;
+    type?: "DESK" | "POD" | "ROOM" | "STUDIO";
+    description: string;
+    location: string;
+    city: string;
+    dailyPrice: number;
+    availableSpots?: number;
+    images?: string[];
+    amenities?: { name: string; icon: string; detail: string }[];
+  }) => {
+    const newWorkspace: WorkspaceItem = {
+      id: `ws-${Date.now()}`,
+      title: data.title,
+      type: data.type || "DESK",
+      description: data.description || "Modern agile coworking desk with high-speed fiber internet and ergonomic setup.",
+      location: data.location,
+      city: data.city || "Chandigarh",
+      dailyPrice: Number(data.dailyPrice),
+      rating: 5.0,
+      reviewCount: 1,
+      availableSpots: Number(data.availableSpots || 4),
+      status: "ACTIVE",
+      images: data.images && data.images.length > 0 ? data.images : [
+        "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1527192491265-7e15c55b1ed2?auto=format&fit=crop&w=1200&q=80",
+      ],
+      amenities: data.amenities && data.amenities.length > 0 ? data.amenities : [
+        { name: "High-Speed Wi-Fi", icon: "wifi", detail: "500 Mbps fiber" },
+        { name: "Power Backup", icon: "bolt", detail: "100% uninterrupted" },
+        { name: "Air Conditioning", icon: "ac_unit", detail: "Climate controlled" },
+        { name: "Ergonomic Chair", icon: "chair", detail: "Lumbar supported" },
+      ],
+      host: {
+        id: "host-alex",
+        name: "Alex Rivera",
+        avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuD62MvtnZ6XK-zSmCgwgOop8QI4K6ZiEhblxYxS0anORhZJe8DrUxqxrmf_BiHM_ei-9TZuwCW7oS_NqljWb9PPp1yZ-gjD2TJoiAD40UKHsdYn7JsZXRfhxTKdmskCYB4O06uMk3LE2Wypq0PXXC09Mf3su2p8JyB0GyER4NwPM19-T2gp1TwRoXMADpsJwv-SYSOchhu2ubuEC1qcusKXO0cKsOBwFgdr9ZAdYnQMm6GiAwDXyDaB",
+        verified: true,
+        joinedYear: "2024",
+        responseRate: "100% (Instant)",
+        badge: "Verified Host",
+      },
+    };
+    workspacesStore = [newWorkspace, ...workspacesStore];
+    return newWorkspace;
+  },
+
   createBooking: (data: {
     workspaceId: string;
     bookingDate: string;
@@ -124,6 +171,63 @@ export const dataService = {
 
   getProductById: (id: string) => {
     return productsStore.find((p) => p.id === id) || null;
+  },
+
+  createProduct: (data: {
+    title: string;
+    description: string;
+    price: number;
+    originalPrice?: number;
+    condition?: "NEW" | "LIKE_NEW" | "GOOD" | "FAIR";
+    conditionScore?: string;
+    conditionTier?: number;
+    category: "laptops" | "phones" | "tablets" | "monitors" | "accessories" | "audio" | "gaming";
+    location: string;
+    images?: string[];
+    specs?: { [key: string]: string };
+    inTheBox?: string;
+  }) => {
+    const condition = data.condition || "LIKE_NEW";
+    const conditionTier = data.conditionTier || (condition === "LIKE_NEW" ? 4 : condition === "GOOD" ? 3 : 2);
+    const conditionScore = data.conditionScore || (condition === "LIKE_NEW" ? "Pristine Grade (9.4/10)" : condition === "GOOD" ? "Excellent Grade (8.8/10)" : "Good Grade (7.5/10)");
+
+    const newProd: ProductItem = {
+      id: `prod-${Date.now()}`,
+      title: data.title,
+      description: data.description || "Pre-owned electronics in clean inspected condition.",
+      price: Number(data.price),
+      originalPrice: Number(data.originalPrice || Math.round(Number(data.price) * 1.35)),
+      condition,
+      conditionScore,
+      conditionTier,
+      category: data.category || "laptops",
+      status: "ACTIVE",
+      location: data.location || "Sector 17, Chandigarh",
+      dealTag: "NEW LISTING",
+      images: data.images && data.images.length > 0 ? data.images : [
+        "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=1200&q=80",
+      ],
+      specs: data.specs || {
+        "Condition Tier": conditionScore,
+        "Warranty": "48h Nexus Escrow Inspection",
+        "Acquisition": "Certified Clean Serial",
+      },
+      inTheBox: data.inTheBox || "Device + Original Charger & Cables",
+      seller: {
+        id: "seller-alex",
+        name: "Alex Rivera",
+        avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuD62MvtnZ6XK-zSmCgwgOop8QI4K6ZiEhblxYxS0anORhZJe8DrUxqxrmf_BiHM_ei-9TZuwCW7oS_NqljWb9PPp1yZ-gjD2TJoiAD40UKHsdYn7JsZXRfhxTKdmskCYB4O06uMk3LE2Wypq0PXXC09Mf3su2p8JyB0GyER4NwPM19-T2gp1TwRoXMADpsJwv-SYSOchhu2ubuEC1qcusKXO0cKsOBwFgdr9ZAdYnQMm6GiAwDXyDaB",
+        verified: true,
+        joinedYear: "2024",
+        rating: 5.0,
+        reviewCount: 1,
+        salesCount: 1,
+        responseTime: "Replies within 15m",
+      },
+    };
+    productsStore = [newProd, ...productsStore];
+    return newProd;
   },
 
   createOrder: (productId: string) => {
